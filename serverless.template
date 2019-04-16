@@ -1,0 +1,44 @@
+{
+	"AWSTemplateFormatVersion" : "2010-09-09",
+	"Transform" : "AWS::Serverless-2016-10-31",
+	"Description" : "A quick payment mock for use from our PBX provider",
+
+	"Resources" : {
+
+			"AspNetCoreFunction" : {
+				"Type" : "AWS::Serverless::Function",
+				"Properties": {
+				"Handler": "mockAuth::mockAuth.LambdaEntryPoint::FunctionHandlerAsync",
+				"Runtime": "dotnetcore2.1",
+				"CodeUri": "",
+				"MemorySize": 1024,
+				"Timeout": 30,
+				"Role": null,
+				"Policies": [ "AWSLambdaFullAccess" ],
+				"Events": {
+					"ProxyResource": {
+						"Type": "Api",
+						"Properties": {
+							"Path": "/{proxy+}",
+							"Method": "ANY"
+						}
+					},
+					"RootResource": {
+						"Type": "Api",
+						"Properties": {
+							"Path": "/",
+							"Method": "ANY"
+						}
+					}
+				}
+			}
+		}
+	},
+
+	"Outputs" : {
+		"ApiURL" : {
+			"Description" : "API endpoint URL for Prod environment",
+			"Value" : { "Fn::Sub" : "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/" }
+		}
+	}
+}
